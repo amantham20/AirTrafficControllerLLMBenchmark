@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { buildLayout, buildUnits, stepGround, AirportDiagram, runwayHeading } from './airport.jsx';
 
 /* ============================================================
    ATC SIMULATOR & MODEL-AGNOSTIC AI BENCHMARK
-   Single-file React artifact. Dark radar terminal aesthetic.
+   Dark radar terminal aesthetic. Radar approach view, live
+   airport surface (ground) view, and a model-agnostic benchmark.
    ============================================================ */
 
 /* ----------------------------- constants ----------------------------- */
@@ -485,6 +487,8 @@ export default function ATCBenchmark() {
   const cmdOrderRef = useRef([]);
   const logEndRef = useRef(null);
   const inputRef = useRef(null);
+  const groundRef = useRef([]);
+  const elapsedRef = useRef(0);
 
   // state (triggers render)
   const [scIdx, setScIdx] = useState(0);
@@ -501,20 +505,27 @@ export default function ATCBenchmark() {
   const [benchText, setBenchText] = useState('');
   const [benchResult, setBenchResult] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [ground, setGround] = useState([]);
 
   const scenario = SCENARIOS[scIdx];
   const promptText = buildPrompt(scenario);
+  const layout = useMemo(() => buildLayout(scenario), [scIdx]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* reset / initialize */
   const resetSim = useCallback((idx) => {
     const sc = SCENARIOS[idx];
     const init = initAircraft(sc);
+    const lay = buildLayout(sc);
+    const units = buildUnits(sc, lay);
     acsRef.current = init;
+    groundRef.current = units;
     runRef.current = false;
     safetyRef.current = 40;
     phrasRef.current = 0;
     goAroundRef.current = 0;
     cmdOrderRef.current = [];
+    elapsedRef.current = 0;
+    setGround(units);
     setAcs(init);
     setRunning(false);
     setElapsed(0);
@@ -540,13 +551,18 @@ export default function ATCBenchmark() {
       const v = detectViolations(next, scenario.sep);
       if (v.length > 0) safetyRef.current = Math.max(0, safetyRef.current - 0.15);
       acsRef.current = next;
+      elapsedRef.current += 1;
+      const acsByCs = Object.fromEntries(next.map((a) => [a.cs, a]));
+      const nextGround = stepGround(groundRef.current, { layout, acsByCs, elapsed: elapsedRef.current, running: true });
+      groundRef.current = nextGround;
       setAcs(next);
       setViols(v);
       setSafetyPts(safetyRef.current);
+      setGround(nextGround);
       setElapsed((e) => e + 1);
     }, TICK);
     return () => { clearInterval(id); runRef.current = false; };
-  }, [running, scenario]);
+  }, [running, scenario, layout]);
 
   // auto-scroll comms log
   useEffect(() => { logEndRef.current?.scrollIntoView({ block: 'end' }); }, [log]);
@@ -614,6 +630,9 @@ export default function ATCBenchmark() {
 
   const submitCmd = () => { if (cmdInput.trim()) { applyCommand(cmdInput); setCmdInput(''); } };
   const selectAC = (cs) => { setSelAC(cs); setCmdInput(cs + ' '); inputRef.current?.focus(); };
+  // ground/airborne units may be controllable scenario traffic or resident scenery
+  const selectAnyCs = (cs) => { if (acsRef.current.some((a) => a.cs === cs)) selectAC(cs); else setSelAC(cs); };
+  const onSelectGround = (u) => selectAnyCs(u.cs);
   const toggleRun = () => setRunning((r) => !r);
   const copyPrompt = () => {
     try {
@@ -747,10 +766,25 @@ export default function ATCBenchmark() {
         </g>
       )}
       <g>
-        <circle cx={CX} cy={CY} r={6} fill="none" stroke={C.airport} strokeWidth={1.5} />
-        <line x1={CX - 8} y1={CY} x2={CX + 8} y2={CY} stroke={C.airport} strokeWidth={1.5} />
-        <line x1={CX} y1={CY - 8} x2={CX} y2={CY + 8} stroke={C.airport} strokeWidth={1.5} />
-        <text x={CX + 11} y={CY + 15} fill={C.airport} fontSize={11} fontFamily={FONT}>{scenario.airport}</text>
+        <circle cx={CX} cy={CY} r={14} fill="none" stroke={C.airport} strokeWidth={1} opacity={0.4} />
+        {(() => {
+          const groups = {};
+          scenario.runways.forEach((id) => { const h = runwayHeading(id); (groups[h] = groups[h] || []).push(id); });
+          const half = 11;
+          const out = [];
+          Object.entries(groups).forEach(([h, ids]) => {
+            const r = (Number(h) * Math.PI) / 180;
+            const d = { x: Math.sin(r), y: -Math.cos(r) }, p = { x: Math.cos(r), y: Math.sin(r) };
+            ids.forEach((id, i) => {
+              const off = (i - (ids.length - 1) / 2) * 3.4;
+              const cx = CX + p.x * off, cy = CY + p.y * off;
+              out.push(<line key={id} x1={cx - d.x * half} y1={cy - d.y * half} x2={cx + d.x * half} y2={cy + d.y * half}
+                stroke={C.airport} strokeWidth={2} strokeLinecap="round" />);
+            });
+          });
+          return out;
+        })()}
+        <text x={CX + 17} y={CY + 16} fill={C.airport} fontSize={11} fontFamily={FONT}>{scenario.airport}</text>
       </g>
       {acs.map((a) => renderAircraft(a))}
     </svg>
@@ -852,6 +886,41 @@ export default function ATCBenchmark() {
     </div>
   );
 
+  const renderCommandBar = () => (
+    <div style={panel}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <input
+          ref={inputRef}
+          value={cmdInput}
+          onChange={(e) => setCmdInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') submitCmd(); }}
+          placeholder="e.g. UAL1234 descend and maintain 3000  ·  AAL100 cleared takeoff 10R"
+          style={{ flex: 1, minWidth: 0, background: '#05100b', border: `1px solid ${C.border}`, color: C.green, fontFamily: FONT, fontSize: 12, padding: '8px 10px', borderRadius: 4, outline: 'none' }}
+        />
+        <button onClick={submitCmd} style={{ background: C.green, color: '#031b12', border: 'none', borderRadius: 4, padding: '0 16px', fontFamily: FONT, fontWeight: 'bold', cursor: 'pointer' }}>TX</button>
+      </div>
+      <div style={{ color: C.dim, fontSize: 9.5, marginTop: 6, lineHeight: 1.5 }}>
+        DESCEND/CLIMB [alt] · TURN LEFT/RIGHT [hdg] · SPEED [kt] · CLEARED ILS [rwy] · CLEARED TAKEOFF [rwy] · HOLD
+      </div>
+    </div>
+  );
+
+  const renderCommsLog = (height = 170) => (
+    <div style={panel}>
+      <div style={{ color: C.green, fontSize: 10, marginBottom: 6 }}>▌ COMMS LOG</div>
+      <div style={{ height, overflowY: 'auto', fontSize: 11, lineHeight: 1.6 }}>
+        {log.length === 0 && <div style={{ color: C.dim }}>No transmissions yet…</div>}
+        {log.map((e, i) => (
+          <div key={i} style={{ marginBottom: 4 }}>
+            <div style={{ color: C.text }}><span style={{ color: C.dim }}>[{e.ts}]</span> → {e.tx}</div>
+            <div style={{ color: e.err ? C.red : C.green, paddingLeft: 12 }}>← {e.rx}</div>
+          </div>
+        ))}
+        <div ref={logEndRef} />
+      </div>
+    </div>
+  );
+
   const renderGameTab = () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -861,38 +930,69 @@ export default function ATCBenchmark() {
       <div style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 300 }}>
         {renderAtis()}
         {renderLiveTraffic()}
-        <div style={panel}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input
-              ref={inputRef}
-              value={cmdInput}
-              onChange={(e) => setCmdInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') submitCmd(); }}
-              placeholder="e.g. UAL1234 descend and maintain 3000"
-              style={{ flex: 1, minWidth: 0, background: '#05100b', border: `1px solid ${C.border}`, color: C.green, fontFamily: FONT, fontSize: 12, padding: '8px 10px', borderRadius: 4, outline: 'none' }}
-            />
-            <button onClick={submitCmd} style={{ background: C.green, color: '#031b12', border: 'none', borderRadius: 4, padding: '0 16px', fontFamily: FONT, fontWeight: 'bold', cursor: 'pointer' }}>TX</button>
-          </div>
-          <div style={{ color: C.dim, fontSize: 9.5, marginTop: 6, lineHeight: 1.5 }}>
-            DESCEND/CLIMB [alt] · TURN LEFT/RIGHT [hdg] · SPEED [kt] · CLEARED ILS [rwy] · CLEARED TAKEOFF [rwy] · HOLD
-          </div>
-        </div>
-        <div style={panel}>
-          <div style={{ color: C.green, fontSize: 10, marginBottom: 6 }}>▌ COMMS LOG</div>
-          <div style={{ height: 170, overflowY: 'auto', fontSize: 11, lineHeight: 1.6 }}>
-            {log.length === 0 && <div style={{ color: C.dim }}>No transmissions yet…</div>}
-            {log.map((e, i) => (
-              <div key={i} style={{ marginBottom: 4 }}>
-                <div style={{ color: C.text }}><span style={{ color: C.dim }}>[{e.ts}]</span> → {e.tx}</div>
-                <div style={{ color: e.err ? C.red : C.green, paddingLeft: 12 }}>← {e.rx}</div>
-              </div>
-            ))}
-            <div ref={logEndRef} />
-          </div>
-        </div>
+        {renderCommandBar()}
+        {renderCommsLog(170)}
       </div>
     </div>
   );
+
+  const GROUND_PHASE = {
+    park: ['AT GATE', C.dim], loop: ['TAXI', C.blue], taxiOut: ['TAXI OUT', C.amber],
+    taxiIn: ['TAXI IN', C.green], hold: ['HOLD SHORT', '#d6b53a'], roll: ['DEPARTING', C.dep],
+    rollout: ['LANDING', C.green],
+  };
+
+  const renderAirportTab = () => {
+    const order = ['roll', 'rollout', 'hold', 'taxiOut', 'taxiIn', 'loop', 'park'];
+    const active = ground.filter((u) => u.phase !== 'park');
+    const parkedN = ground.filter((u) => u.phase === 'park').length;
+    const sorted = [...ground].sort((a, b) => order.indexOf(a.phase) - order.indexOf(b.phase));
+    const legend = [
+      [C.dep, '■', 'Departure'], [C.green, '■', 'Arrival'], ['#5bc8f5', '■', 'Resident ramp'],
+      ['#d6b53a', '▬', 'Hold short'], [C.blue, '▲', 'Airborne (on final)'],
+    ];
+    return (
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 600px', minWidth: 320, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <AirportDiagram layout={layout} units={ground} airborne={acs} selected={selAC} onSelect={selectAnyCs} scenario={scenario} />
+          <div style={{ ...panel, display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 10, color: C.dim, alignItems: 'center' }}>
+            {legend.map(([col, sym, label]) => (
+              <span key={label}><span style={{ color: col }}>{sym}</span> {label}</span>
+            ))}
+            <span style={{ marginLeft: 'auto', color: C.text }}>
+              GATES <b style={{ color: C.green }}>{parkedN}</b>/{layout.gates.length} · TAXIING <b style={{ color: C.amber }}>{active.length}</b>
+            </span>
+          </div>
+        </div>
+        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 280, maxWidth: 440 }}>
+          {renderAtis()}
+          {renderCommandBar()}
+          <div style={{ ...panel, padding: 0, overflow: 'hidden' }}>
+            <div style={{ color: C.green, fontSize: 10, padding: '8px 8px 6px' }}>▌ GROUND MOVEMENT</div>
+            <div style={{ maxHeight: 190, overflowY: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+                <tbody>
+                  {sorted.map((u) => {
+                    const [label, col] = GROUND_PHASE[u.phase] || ['—', C.dim];
+                    return (
+                      <tr key={u.id} onClick={() => onSelectGround(u)}
+                        style={{ cursor: 'pointer', background: selAC === u.cs ? 'rgba(0,229,160,0.08)' : 'transparent', borderTop: `1px solid ${C.border}` }}>
+                        <td style={{ ...tdS, color: u.color, fontWeight: 'bold' }}>{u.label}</td>
+                        <td style={tdS}>{u.type}</td>
+                        <td style={{ ...tdS, color: col, fontWeight: 'bold' }}>{label}</td>
+                        <td style={{ ...tdS, color: C.dim }}>{u.runwayId ? 'RWY ' + u.runwayId : 'gate ' + (u.gate + 1)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {renderCommsLog(150)}
+        </div>
+      </div>
+    );
+  };
 
   const renderBenchResult = () => {
     const r = benchResult;
@@ -972,13 +1072,13 @@ export default function ATCBenchmark() {
         >
           {SCENARIOS.map((s, i) => <option key={s.id} value={i}>{i + 1}. {s.name}</option>)}
         </select>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {[['info', '📋 INFO'], ['game', '▶ PLAY'], ['benchmark', '⚡ BENCH']].map(([m, label]) => (
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {[['info', '📋 INFO'], ['game', '▶ RADAR'], ['airport', '🛬 GROUND'], ['benchmark', '⚡ BENCH']].map(([m, label]) => (
             <button key={m} onClick={() => setMode(m)} style={tabStyle(mode === m)}>{label}</button>
           ))}
         </div>
         <div style={{ flex: 1 }} />
-        {mode === 'game' && (
+        {(mode === 'game' || mode === 'airport') && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             {viols.length > 0 && (
               <span style={{ color: C.red, fontWeight: 'bold', fontSize: 12, animation: 'pulse 1s infinite' }}>⚠ SEPARATION ({viols.length})</span>
@@ -997,6 +1097,7 @@ export default function ATCBenchmark() {
 
       {mode === 'info' && renderInfoTab()}
       {mode === 'game' && renderGameTab()}
+      {mode === 'airport' && renderAirportTab()}
       {mode === 'benchmark' && renderBenchTab()}
     </div>
   );
