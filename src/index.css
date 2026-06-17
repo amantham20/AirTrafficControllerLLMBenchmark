@@ -1,0 +1,38 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #070c12;
+  color: #8fb8a8;
+  font-family: 'Courier New', monospace;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Phosphor-green scrollbars to match the radar terminal aesthetic. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #152535;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1c3147;
+}
+::-webkit-scrollbar-track {
+  background: #0a1218;
+}

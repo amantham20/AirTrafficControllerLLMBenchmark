@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/radar.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070c12" />
+    <meta
+      name="description"
+      content="ATC radar simulator that doubles as a model-agnostic AI benchmark — play the radar game or generate and score LLM responses."
+    />
+    <title>ATC // Radar Benchmark</title>
+    <style>
+      @keyframes atc-sweep { to { transform: rotate(360deg); } }
+      @keyframes atc-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #070c12;
+        color: #00e5a0;
+        font-family: 'Courier New', monospace;
+      }
+      #boot .scope {
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        border: 1px solid #0a2018;
+        box-shadow: inset 0 0 0 18px transparent, inset 0 0 0 1px #0a2018;
+        position: relative;
+        background:
+          radial-gradient(circle, transparent 0 7px, #0a2018 7px 8px, transparent 8px) center/100% 100%,
+          radial-gradient(circle, transparent 0 28px, #0a2018 28px 29px, transparent 29px) center/100% 100%;
+      }
+      #boot .scope::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, rgba(0, 229, 160, 0.45), transparent 70%);
+        animation: atc-sweep 1.6s linear infinite;
+        mask: radial-gradient(circle, transparent 0 6px, #000 6px);
+        -webkit-mask: radial-gradient(circle, transparent 0 6px, #000 6px);
+      }
+      #boot .dot {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #00e5a0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #boot .label { font-size: 13px; letter-spacing: 2px; animation: atc-blink 1.2s ease-in-out infinite; }
+      #boot .sub { font-size: 10px; color: #3a6a58; letter-spacing: 1px; }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="boot">
+        <div class="scope"><div class="dot"></div></div>
+        <div class="label">ACQUIRING RADAR CONTACT…</div>
+        <div class="sub">ATC // RADAR BENCHMARK</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
