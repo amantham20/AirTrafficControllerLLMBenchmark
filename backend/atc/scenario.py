@@ -107,6 +107,8 @@ def list_scenarios() -> list[dict]:
     for path in sorted(SCENARIO_DIR.glob("*.json")):
         with open(path) as f:
             raw = json.load(f)
+        if "id" not in raw:
+            continue  # instruction scripts etc. live alongside scenarios
         out.append({
             "id": raw["id"],
             "name": raw.get("name", raw["id"]),

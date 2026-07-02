@@ -1,0 +1,37 @@
+{
+  "id": "degraded",
+  "name": "Degraded — runway closed, comms trouble",
+  "description": "A disabled aircraft closes runway 05/23 at t=300; all operations shift to runway 14. Elevated readback-error, stuck-mic and slow-response rates plus reduced taxi speed in heavy rain. Tests graceful degradation and readback vigilance.",
+  "airport": "kmbs",
+  "seed": 404,
+  "duration_s": 3600,
+  "scan_interval_s": 15,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 140, "wind_kt": 12, "visibility_sm": 3,
+              "taxi_speed_factor": 0.8, "separation_multiplier": 1.25},
+  "pilot_error_rates": {"readback_error": 0.12, "stuck_mic": 0.08, "slow_response": 0.12},
+  "target_throughput_ops_per_hour": 8,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure", "gate": "G3", "runway": "05", "scheduled_time_s": 150, "destination": "KORD"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival", "gate": "G1", "runway": "05", "scheduled_time_s": 550, "origin": "KDTW"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure", "gate": "G5", "runway": "05", "scheduled_time_s": 800, "destination": "KATL"},
+    {"callsign": "SKW4820", "type_code": "CRJ2", "kind": "arrival", "gate": "G2", "runway": "05", "scheduled_time_s": 1300, "origin": "KMSP"},
+    {"callsign": "SWA88", "type_code": "B738", "kind": "departure", "gate": "G4", "runway": "05", "scheduled_time_s": 1500, "destination": "KMDW"},
+    {"callsign": "N4821K", "type_code": "C172", "kind": "departure", "gate": "G6", "runway": "05", "scheduled_time_s": 2000, "destination": "KLAN"},
+    {"callsign": "RPA3312", "type_code": "E145", "kind": "arrival", "gate": "G4", "runway": "05", "scheduled_time_s": 2500, "origin": "KORD"}
+  ],
+  "events": [
+    {
+      "at_s": 300,
+      "kind": "runway_closure",
+      "params": {"runway_id": "05/23"},
+      "announce": "Runway 05/23 is CLOSED — disabled aircraft on the runway. Expect runway 14 for all operations."
+    },
+    {
+      "at_s": 320,
+      "kind": "runway_change",
+      "params": {"active_ends": ["14"], "reassign_arrivals": {"05": "14"}},
+      "announce": "All operations now on runway 14. Departures taxi via P1 -> TW_G -> HS_14; arrivals will exit at taxiway A."
+    }
+  ]
+}

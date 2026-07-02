@@ -1,0 +1,37 @@
+{
+  "id": "runway_change",
+  "name": "Runway change — wind shift",
+  "description": "Operations start on runway 05. At t=1500 a wind shift to 230@16 forces a change to runway 23: inbound arrivals are re-vectored to the 23 approach and departures must be re-routed to HS_23 (no 14/32 crossing) mid-taxi. Tests adaptability.",
+  "airport": "kmbs",
+  "seed": 303,
+  "duration_s": 3600,
+  "scan_interval_s": 20,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 50, "wind_kt": 8, "visibility_sm": 10},
+  "pilot_error_rates": {"readback_error": 0.0, "stuck_mic": 0.0, "slow_response": 0.03},
+  "target_throughput_ops_per_hour": 10,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure", "gate": "G3", "runway": "05", "scheduled_time_s": 180, "destination": "KORD"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival", "gate": "G1", "runway": "05", "scheduled_time_s": 700, "origin": "KDTW"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure", "gate": "G5", "runway": "05", "scheduled_time_s": 900, "destination": "KATL"},
+    {"callsign": "SWA88", "type_code": "B738", "kind": "departure", "gate": "G4", "runway": "05", "scheduled_time_s": 1380, "destination": "KMDW"},
+    {"callsign": "SKW4820", "type_code": "CRJ2", "kind": "arrival", "gate": "G2", "runway": "05", "scheduled_time_s": 1900, "origin": "KMSP"},
+    {"callsign": "UAL880", "type_code": "B738", "kind": "departure", "gate": "G6", "runway": "05", "scheduled_time_s": 2000, "destination": "KDEN"},
+    {"callsign": "DAL221", "type_code": "A320", "kind": "arrival", "gate": "G5", "runway": "05", "scheduled_time_s": 2500, "origin": "KATL"},
+    {"callsign": "ENY3641", "type_code": "CRJ2", "kind": "departure", "gate": "G1", "runway": "05", "scheduled_time_s": 2600, "destination": "KDFW"}
+  ],
+  "events": [
+    {
+      "at_s": 1500,
+      "kind": "weather_change",
+      "params": {"wind_dir_deg": 230, "wind_kt": 16},
+      "announce": "Wind shift: wind now 230 at 16 kt. Runway 05 has a 16 kt tailwind."
+    },
+    {
+      "at_s": 1520,
+      "kind": "runway_change",
+      "params": {"active_ends": ["23"], "reassign_arrivals": {"05": "23"}},
+      "announce": "Runway configuration change: runway 23 is now active for all operations. Arrivals are being re-vectored to the runway 23 approach. Re-route taxiing departures to HS_23 via taxiway A."
+    }
+  ]
+}

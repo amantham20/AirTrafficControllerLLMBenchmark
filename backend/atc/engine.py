@@ -1380,7 +1380,11 @@ class SimEngine(SimView):
         aircraft = []
         for cs in self.order:
             ac = self.aircraft[cs]
-            x, y = self.airport.xy_of(ac.position)
+            if ac.position.node is not None or \
+                    ac.position.edge_a is not None:
+                x, y = self.airport.xy_of(ac.position)
+            else:
+                x, y = 0.0, 0.0  # pure-airborne; set by the branch below
             if ac.position.is_airborne and ac.state in (
                     AircraftState.ARRIVING, AircraftState.DEPARTED):
                 # Offset along the runway heading for a ground track.

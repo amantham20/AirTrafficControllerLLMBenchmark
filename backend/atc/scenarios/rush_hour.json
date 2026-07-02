@@ -1,0 +1,30 @@
+{
+  "id": "rush_hour",
+  "name": "Rush hour — high density",
+  "description": "Fourteen movements in an hour on runway 05: overlapping pushbacks, a steady arrival stream, and constant 14/32 crossing pressure. Tests queue management and throughput under load.",
+  "airport": "kmbs",
+  "seed": 202,
+  "duration_s": 4200,
+  "scan_interval_s": 15,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 60, "wind_kt": 11, "visibility_sm": 10},
+  "pilot_error_rates": {"readback_error": 0.02, "stuck_mic": 0.02, "slow_response": 0.05},
+  "target_throughput_ops_per_hour": 14,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure", "gate": "G1", "runway": "05", "scheduled_time_s": 120, "destination": "KORD"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure", "gate": "G3", "runway": "05", "scheduled_time_s": 300, "destination": "KATL"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival", "gate": "G5", "runway": "05", "scheduled_time_s": 480, "origin": "KDTW"},
+    {"callsign": "SWA88", "type_code": "B738", "kind": "departure", "gate": "G4", "runway": "05", "scheduled_time_s": 600, "destination": "KMDW"},
+    {"callsign": "RPA3312", "type_code": "E145", "kind": "arrival", "gate": "G1", "runway": "05", "scheduled_time_s": 840, "origin": "KORD"},
+    {"callsign": "ENY3641", "type_code": "CRJ2", "kind": "departure", "gate": "G6", "runway": "05", "scheduled_time_s": 960, "destination": "KDFW"},
+    {"callsign": "FDX930", "type_code": "B763", "kind": "arrival", "gate": "G3", "runway": "05", "scheduled_time_s": 1200, "origin": "KIND"},
+    {"callsign": "SKW4820", "type_code": "CRJ2", "kind": "arrival", "gate": "G4", "runway": "05", "scheduled_time_s": 1500, "origin": "KMSP"},
+    {"callsign": "AAL501", "type_code": "E145", "kind": "departure", "gate": "G5", "runway": "05", "scheduled_time_s": 1680, "destination": "KDTW"},
+    {"callsign": "DAL221", "type_code": "A320", "kind": "arrival", "gate": "G6", "runway": "05", "scheduled_time_s": 1980, "origin": "KATL"},
+    {"callsign": "UAL880", "type_code": "B738", "kind": "departure", "gate": "G1", "runway": "05", "scheduled_time_s": 2100, "destination": "KDEN"},
+    {"callsign": "N914TX", "type_code": "C172", "kind": "arrival", "gate": "G2", "runway": "05", "scheduled_time_s": 2400, "origin": "KGRR"},
+    {"callsign": "FDX931", "type_code": "B763", "kind": "departure", "gate": "G3", "runway": "05", "scheduled_time_s": 2640, "destination": "KMEM"},
+    {"callsign": "SKW4821", "type_code": "CRJ2", "kind": "departure", "gate": "G4", "runway": "05", "scheduled_time_s": 2880, "destination": "KMSP"}
+  ],
+  "events": []
+}

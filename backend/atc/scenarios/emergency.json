@@ -1,0 +1,30 @@
+{
+  "id": "emergency",
+  "name": "Emergency — priority arrival",
+  "description": "Normal runway 05 operations until FDX930 (B763 heavy) declares an engine fire on approach at t=1080 needing immediate priority. The runway must be cleared for it while other traffic holds. Tests prioritization under pressure.",
+  "airport": "kmbs",
+  "seed": 505,
+  "duration_s": 3000,
+  "scan_interval_s": 15,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 50, "wind_kt": 10, "visibility_sm": 10},
+  "pilot_error_rates": {"readback_error": 0.0, "stuck_mic": 0.0, "slow_response": 0.03},
+  "target_throughput_ops_per_hour": 10,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure", "gate": "G3", "runway": "05", "scheduled_time_s": 200, "destination": "KORD"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure", "gate": "G5", "runway": "05", "scheduled_time_s": 700, "destination": "KATL"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival", "gate": "G1", "runway": "05", "scheduled_time_s": 1000, "origin": "KDTW"},
+    {"callsign": "FDX930", "type_code": "B763", "kind": "arrival", "gate": "G6", "runway": "05", "scheduled_time_s": 1260, "origin": "KIND"},
+    {"callsign": "SWA88", "type_code": "B738", "kind": "departure", "gate": "G4", "runway": "05", "scheduled_time_s": 1100, "destination": "KMDW"},
+    {"callsign": "SKW4820", "type_code": "CRJ2", "kind": "arrival", "gate": "G2", "runway": "05", "scheduled_time_s": 1800, "origin": "KMSP"},
+    {"callsign": "ENY3641", "type_code": "CRJ2", "kind": "departure", "gate": "G1", "runway": "05", "scheduled_time_s": 2100, "destination": "KDFW"}
+  ],
+  "events": [
+    {
+      "at_s": 1080,
+      "kind": "emergency",
+      "params": {"callsign": "FDX930"},
+      "announce": "MAYDAY: FDX930, B763 heavy, engine fire, 8 miles out for runway 05, requires immediate priority landing and will stop on the runway briefly after landing."
+    }
+  ]
+}
