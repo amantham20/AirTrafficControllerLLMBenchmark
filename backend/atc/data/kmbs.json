@@ -1,0 +1,107 @@
+{
+  "id": "KMBS",
+  "name": "MBS International (simplified from FAA airport diagram)",
+  "description": "Two intersecting runways: 05/23 (2440 m primary) and 14/32 (1950 m). Taxiway A parallels 05/23 on the northwest side and crosses runway 14/32 (hold-short nodes HS_A_W / HS_A_E). Taxiway D crosses runway 05/23 (HS_D_N / HS_D_S) to reach the runway 32 threshold. Terminal apron with gates G1-G6 sits northeast of runway 14/32; every taxi route to runway 05 requires crossing runway 14/32. Node coordinates are meters in a local east/north frame, digitized approximately from the published diagram and simplified.",
+  "nodes": [
+    {"id": "RW05_THR", "type": "runway", "x": 0, "y": 0},
+    {"id": "RW05_E1", "type": "runway", "x": 610, "y": 512},
+    {"id": "RWX", "type": "runway", "x": 1004, "y": 843},
+    {"id": "RW05_D", "type": "runway", "x": 1440, "y": 1209},
+    {"id": "RW23_THR", "type": "runway", "x": 1869, "y": 1569},
+    {"id": "RW14_THR", "type": "runway", "x": 200, "y": 1800},
+    {"id": "RW14_A", "type": "runway", "x": 927, "y": 934},
+    {"id": "RW32_THR", "type": "runway", "x": 1454, "y": 306},
+
+    {"id": "A1", "type": "taxi", "x": -77, "y": 92},
+    {"id": "A2", "type": "taxi", "x": 390, "y": 483},
+    {"id": "A3", "type": "taxi", "x": 857, "y": 876},
+    {"id": "HS_A_W", "type": "hold_short", "x": 892, "y": 905, "hold_short_for": "14/32"},
+    {"id": "HS_A_E", "type": "hold_short", "x": 961, "y": 963, "hold_short_for": "14/32"},
+    {"id": "A4", "type": "taxi", "x": 1325, "y": 1268},
+    {"id": "A5", "type": "taxi", "x": 1792, "y": 1661},
+
+    {"id": "HS_05", "type": "hold_short", "x": -45, "y": 52, "hold_short_for": "05/23"},
+    {"id": "HS_23", "type": "hold_short", "x": 1830, "y": 1615, "hold_short_for": "05/23"},
+
+    {"id": "HS_D_N", "type": "hold_short", "x": 1395, "y": 1232, "hold_short_for": "05/23"},
+    {"id": "HS_D_S", "type": "hold_short", "x": 1485, "y": 1186, "hold_short_for": "05/23"},
+    {"id": "D2", "type": "taxi", "x": 1560, "y": 700},
+    {"id": "HS_32", "type": "hold_short", "x": 1510, "y": 390, "hold_short_for": "14/32"},
+
+    {"id": "TW_G", "type": "taxi", "x": 360, "y": 1745},
+    {"id": "HS_14", "type": "hold_short", "x": 275, "y": 1772, "hold_short_for": "14/32"},
+
+    {"id": "P1", "type": "ramp", "x": 560, "y": 1680},
+    {"id": "P2", "type": "ramp", "x": 720, "y": 1680},
+    {"id": "P3", "type": "ramp", "x": 880, "y": 1680},
+
+    {"id": "G1", "type": "gate", "x": 520, "y": 1760},
+    {"id": "G2", "type": "gate", "x": 600, "y": 1760},
+    {"id": "G3", "type": "gate", "x": 680, "y": 1760},
+    {"id": "G4", "type": "gate", "x": 760, "y": 1760},
+    {"id": "G5", "type": "gate", "x": 840, "y": 1760},
+    {"id": "G6", "type": "gate", "x": 920, "y": 1760}
+  ],
+  "edges": [
+    {"a": "G1", "b": "P1", "type": "ramp", "name": "ramp"},
+    {"a": "G2", "b": "P1", "type": "ramp", "name": "ramp"},
+    {"a": "G3", "b": "P2", "type": "ramp", "name": "ramp"},
+    {"a": "G4", "b": "P2", "type": "ramp", "name": "ramp"},
+    {"a": "G5", "b": "P3", "type": "ramp", "name": "ramp"},
+    {"a": "G6", "b": "P3", "type": "ramp", "name": "ramp"},
+    {"a": "P1", "b": "P2", "type": "ramp", "name": "apron"},
+    {"a": "P2", "b": "P3", "type": "ramp", "name": "apron"},
+
+    {"a": "P2", "b": "A4", "type": "taxiway", "name": "C"},
+    {"a": "P3", "b": "A5", "type": "taxiway", "name": "F"},
+
+    {"a": "A1", "b": "A2", "type": "taxiway", "name": "A"},
+    {"a": "A2", "b": "A3", "type": "taxiway", "name": "A"},
+    {"a": "A3", "b": "HS_A_W", "type": "taxiway", "name": "A"},
+    {"a": "HS_A_W", "b": "RW14_A", "type": "taxiway", "name": "A"},
+    {"a": "RW14_A", "b": "HS_A_E", "type": "taxiway", "name": "A"},
+    {"a": "HS_A_E", "b": "A4", "type": "taxiway", "name": "A"},
+    {"a": "A4", "b": "A5", "type": "taxiway", "name": "A"},
+
+    {"a": "A1", "b": "HS_05", "type": "taxiway", "name": "A"},
+    {"a": "HS_05", "b": "RW05_THR", "type": "taxiway", "name": "A"},
+    {"a": "A5", "b": "HS_23", "type": "taxiway", "name": "A"},
+    {"a": "HS_23", "b": "RW23_THR", "type": "taxiway", "name": "A"},
+
+    {"a": "A4", "b": "HS_D_N", "type": "taxiway", "name": "D"},
+    {"a": "HS_D_N", "b": "RW05_D", "type": "taxiway", "name": "D"},
+    {"a": "RW05_D", "b": "HS_D_S", "type": "taxiway", "name": "D"},
+    {"a": "HS_D_S", "b": "D2", "type": "taxiway", "name": "D"},
+    {"a": "D2", "b": "HS_32", "type": "taxiway", "name": "D"},
+    {"a": "HS_32", "b": "RW32_THR", "type": "taxiway", "name": "D"},
+
+    {"a": "P1", "b": "TW_G", "type": "taxiway", "name": "G"},
+    {"a": "TW_G", "b": "HS_14", "type": "taxiway", "name": "G"},
+    {"a": "HS_14", "b": "RW14_THR", "type": "taxiway", "name": "G"},
+
+    {"a": "RW05_E1", "b": "A2", "type": "taxiway", "name": "E1"},
+
+    {"a": "RW05_THR", "b": "RW05_E1", "type": "runway", "name": "05/23"},
+    {"a": "RW05_E1", "b": "RWX", "type": "runway", "name": "05/23"},
+    {"a": "RWX", "b": "RW05_D", "type": "runway", "name": "05/23"},
+    {"a": "RW05_D", "b": "RW23_THR", "type": "runway", "name": "05/23"},
+    {"a": "RW14_THR", "b": "RW14_A", "type": "runway", "name": "14/32"},
+    {"a": "RW14_A", "b": "RWX", "type": "runway", "name": "14/32"},
+    {"a": "RWX", "b": "RW32_THR", "type": "runway", "name": "14/32"}
+  ],
+  "runways": [
+    {
+      "id": "05/23",
+      "ends": {"05": "RW05_THR", "23": "RW23_THR"},
+      "headings": {"05": 50, "23": 230},
+      "nodes": ["RW05_THR", "RW05_E1", "RWX", "RW05_D", "RW23_THR"]
+    },
+    {
+      "id": "14/32",
+      "ends": {"14": "RW14_THR", "32": "RW32_THR"},
+      "headings": {"14": 140, "32": 320},
+      "nodes": ["RW14_THR", "RW14_A", "RWX", "RW32_THR"]
+    }
+  ],
+  "speed_limits_kt": {"ramp": 10, "taxiway": 20, "runway": 30}
+}

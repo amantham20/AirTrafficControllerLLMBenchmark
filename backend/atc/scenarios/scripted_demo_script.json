@@ -1,0 +1,33 @@
+{
+  "script": [
+    {"at_s": 65, "kind": "approve_pushback", "callsign": "UAL245"},
+    {"at_s": 95, "kind": "approve_pushback", "callsign": "DAL110"},
+
+    {"at_s": 160, "kind": "taxi_instruction", "callsign": "UAL245",
+     "route": ["A4", "HS_A_E", "RW14_A", "HS_A_W", "A3", "A2", "A1", "HS_05"],
+     "hold_short_at": null},
+    {"at_s": 195, "kind": "taxi_instruction", "callsign": "DAL110",
+     "route": ["P2", "A4", "HS_A_E", "RW14_A", "HS_A_W", "A3", "A2", "A1", "HS_05"],
+     "hold_short_at": null},
+
+    {"at_s": 400, "kind": "cross_runway", "callsign": "UAL245", "runway": "14/32"},
+    {"at_s": 480, "kind": "cross_runway", "callsign": "DAL110", "runway": "14/32"},
+
+    {"at_s": 600, "kind": "contact_next_frequency", "callsign": "UAL245"},
+    {"at_s": 620, "kind": "runway_clearance", "callsign": "UAL245",
+     "runway": "05", "clearance_type": "takeoff"},
+
+    {"at_s": 700, "kind": "runway_clearance", "callsign": "AAL500",
+     "runway": "05", "clearance_type": "land"},
+
+    {"at_s": 700, "kind": "contact_next_frequency", "callsign": "DAL110"},
+    {"at_s": 740, "kind": "runway_clearance", "callsign": "DAL110",
+     "runway": "05", "clearance_type": "takeoff"},
+
+    {"at_s": 970, "kind": "contact_next_frequency", "callsign": "AAL500"},
+    {"at_s": 985, "kind": "taxi_instruction", "callsign": "AAL500",
+     "route": ["A3", "HS_A_W", "RW14_A", "HS_A_E", "A4", "P2", "P1", "G1"],
+     "hold_short_at": null},
+    {"at_s": 1090, "kind": "cross_runway", "callsign": "AAL500", "runway": "14/32"}
+  ]
+}

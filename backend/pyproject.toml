@@ -1,0 +1,30 @@
+[project]
+name = "atc-benchmark"
+version = "0.1.0"
+description = "LLM-controlled air traffic control benchmark: deterministic airport simulation, Anthropic tool-use controller interface, scoring harness."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "sqlalchemy>=2.0",
+    "anthropic>=0.40",
+    "websockets>=12",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["atc*"]
+
+[tool.setuptools.package-data]
+atc = ["data/*.json", "scenarios/*.json"]

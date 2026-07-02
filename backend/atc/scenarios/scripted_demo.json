@@ -1,0 +1,25 @@
+{
+  "id": "scripted_demo",
+  "name": "Scripted demo (Phase 1 deliverable)",
+  "description": "Two departures to runway 05 (both must cross runway 14/32 on taxiway A) and one arrival to runway 05, driven by a fixed instruction script. Exercises pushback, taxi, runway crossing, wake-separated sequential departures, landing, and taxi-in.",
+  "airport": "kmbs",
+  "seed": 42,
+  "duration_s": 1500,
+  "scan_interval_s": 20,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 50, "wind_kt": 8, "visibility_sm": 10},
+  "pilot_error_rates": {"readback_error": 0, "stuck_mic": 0, "slow_response": 0},
+  "target_throughput_ops_per_hour": 8,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure",
+     "gate": "G3", "runway": "05", "scheduled_time_s": 60,
+     "destination": "KORD"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure",
+     "gate": "G5", "runway": "05", "scheduled_time_s": 90,
+     "destination": "KATL"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival",
+     "gate": "G1", "runway": "05", "scheduled_time_s": 900,
+     "origin": "KDTW"}
+  ],
+  "events": []
+}
