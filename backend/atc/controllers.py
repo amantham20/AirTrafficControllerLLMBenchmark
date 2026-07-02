@@ -23,6 +23,9 @@ class Controller:
     blocks on the decision, which is what makes runs reproducible."""
 
     name = "base"
+    # If True, decide() applies its instructions itself (needed to build
+    # per-tool-call feedback) and the engine must not re-apply them.
+    self_applying = False
 
     def decide(self, engine: "SimEngine", view: dict,
                new_events: list[Event]) -> list[Instruction]:

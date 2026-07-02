@@ -136,6 +136,12 @@ class SimEngine(SimView):
             self.controller_outbox.append(ev)
         return ev
 
+    def emit_controller_note(self, text: str) -> None:
+        """Controller commentary / adapter diagnostics: shown in the
+        transcript, never fed back to the controller."""
+        self.emit(EventType.SYSTEM, f"[controller] {text}",
+                  to_controller=False)
+
     # ------------------------------------------------------------------
     # SimView interface (used by the Validator)
     # ------------------------------------------------------------------
@@ -1276,8 +1282,9 @@ class SimEngine(SimView):
             "latency_ms": round(latency_ms, 1),
             "n_instructions": len(instructions),
         })
-        for instr in instructions:
-            self.apply_instruction(instr)
+        if not getattr(self.controller, "self_applying", False):
+            for instr in instructions:
+                self.apply_instruction(instr)
 
     # ------------------------------------------------------------------
     # Snapshots

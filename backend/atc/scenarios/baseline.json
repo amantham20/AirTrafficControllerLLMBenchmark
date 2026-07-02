@@ -1,0 +1,30 @@
+{
+  "id": "baseline",
+  "name": "Baseline — light traffic",
+  "description": "Light traffic, good weather, no complications. Four departures and three arrivals over 40 minutes on runway 05. Tests basic competence: pushback/taxi sequencing, the 14/32 crossing, landing clearances, wake separation.",
+  "airport": "kmbs",
+  "seed": 101,
+  "duration_s": 2700,
+  "scan_interval_s": 20,
+  "active_ends": ["05"],
+  "weather": {"wind_dir_deg": 50, "wind_kt": 9, "visibility_sm": 10},
+  "pilot_error_rates": {"readback_error": 0.0, "stuck_mic": 0.0, "slow_response": 0.0},
+  "target_throughput_ops_per_hour": 10,
+  "traffic": [
+    {"callsign": "UAL245", "type_code": "B738", "kind": "departure",
+     "gate": "G3", "runway": "05", "scheduled_time_s": 120, "destination": "KORD"},
+    {"callsign": "AAL500", "type_code": "E145", "kind": "arrival",
+     "gate": "G1", "runway": "05", "scheduled_time_s": 600, "origin": "KDTW"},
+    {"callsign": "DAL110", "type_code": "A320", "kind": "departure",
+     "gate": "G5", "runway": "05", "scheduled_time_s": 700, "destination": "KATL"},
+    {"callsign": "SWA88", "type_code": "B738", "kind": "departure",
+     "gate": "G4", "runway": "05", "scheduled_time_s": 1200, "destination": "KMDW"},
+    {"callsign": "EJA71", "type_code": "CRJ2", "kind": "arrival",
+     "gate": "G2", "runway": "05", "scheduled_time_s": 1500, "origin": "KTEB"},
+    {"callsign": "N4821K", "type_code": "C172", "kind": "departure",
+     "gate": "G6", "runway": "05", "scheduled_time_s": 1800, "destination": "KLAN"},
+    {"callsign": "FDX930", "type_code": "B763", "kind": "arrival",
+     "gate": "G6", "runway": "05", "scheduled_time_s": 2200, "origin": "KIND"}
+  ],
+  "events": []
+}
