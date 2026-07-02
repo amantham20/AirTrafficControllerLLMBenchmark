@@ -61,7 +61,9 @@ def test_ui_snapshot_serializable():
     snap = engine.ui_snapshot()
     json.dumps(snap)
     assert snap["t_s"] == engine.t
-    assert len(snap["aircraft"]) == 3
+    # Handed-off departures drop off the map; the parked arrival remains.
+    assert [a["callsign"] for a in snap["aircraft"]] == ["AAL500"]
+    assert snap["aircraft"][0]["state"] == "AT_GATE"
 
 
 def test_controller_view_serializable():

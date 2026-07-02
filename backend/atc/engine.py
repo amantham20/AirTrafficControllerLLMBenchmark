@@ -817,12 +817,13 @@ class SimEngine(SimView):
             ac.position.air_dist_m = None
 
     def _advance_departed(self, ac: Aircraft) -> None:
+        if ac.frequency == Frequency.DEPARTURE:
+            return  # handed off; no longer tracked
         climb = ac.profile.rotate_speed_ms * LIFTOFF_CLIMB_FACTOR
         ac.position.air_dist_m = (ac.position.air_dist_m or 0.0) + \
             climb * self.tick_s
         ac.speed_ms = climb
-        if ac.position.air_dist_m > DEPARTED_REMOVE_DIST_M and \
-                ac.frequency != Frequency.DEPARTURE:
+        if ac.position.air_dist_m > DEPARTED_REMOVE_DIST_M:
             ac.frequency = Frequency.DEPARTURE
             self.emit(EventType.SYSTEM,
                       f"{ac.callsign} handed off to departure.",
@@ -1380,6 +1381,9 @@ class SimEngine(SimView):
         aircraft = []
         for cs in self.order:
             ac = self.aircraft[cs]
+            if ac.state == AircraftState.DEPARTED and \
+                    ac.frequency == Frequency.DEPARTURE:
+                continue  # gone; keep the map clean
             if ac.position.node is not None or \
                     ac.position.edge_a is not None:
                 x, y = self.airport.xy_of(ac.position)
@@ -1413,9 +1417,16 @@ class SimEngine(SimView):
                 "frequency": ac.frequency.value,
                 "gate": ac.plan.gate,
                 "runway": ac.plan.runway,
+                "scheduled_time_s": ac.plan.scheduled_time_s,
                 "emergency": ac.emergency,
                 "pending_request": ac.pending_request,
                 "total_delay_s": round(ac.total_delay_s),
+                "delay_by_cause": {k: round(v)
+                                   for k, v in ac.delay_by_cause.items()},
+                "min_taxi_time_s": round(ac.min_taxi_time_s)
+                if ac.min_taxi_time_s else None,
+                "actual_taxi_time_s": round(ac.actual_taxi_time_s),
+                "go_arounds": ac.go_arounds,
                 "airborne": ac.position.is_airborne,
             })
         return {
